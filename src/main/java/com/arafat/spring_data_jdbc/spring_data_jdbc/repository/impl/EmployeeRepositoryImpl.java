@@ -14,12 +14,16 @@ import java.util.List;
 @AllArgsConstructor
 public class EmployeeRepositoryImpl implements EmployeeRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Employee> rowMapper = (rs, rowNum) -> new Employee(
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getString("designation"),
-            rs.getDate("joinDate").toLocalDate()
-    );
+    private final RowMapper<Employee> rowMapper = (rs, rowNum) -> {
+        var joinDate = rs.getDate("join_Date");
+        return new Employee(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("designation"),
+                joinDate == null ? null : joinDate.toLocalDate()
+        );
+    };
+
 
 
     @Override
@@ -30,12 +34,14 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public Employee findById(int id) {
-        return null;
+        return jdbcTemplate.queryForObject("select * from employee where id = ?", rowMapper, id);
     }
 
     @Override
-    public void save(Employee employee) {
-
+    public Employee save(Employee employee) {
+        String  sql = "insert into employee (name, designation, join_date) values (?, ?, ?)";
+        int id = jdbcTemplate.update(sql, employee.getName(), employee.getDesignation(), employee.getJoinDate());
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     @Override

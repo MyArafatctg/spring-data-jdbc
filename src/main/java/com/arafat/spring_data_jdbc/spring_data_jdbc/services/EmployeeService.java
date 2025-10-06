@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface EmployeeService {
     public List<EmpResponse> findAll();
-    public List<EmpResponse> findById(int id);
+    public EmpResponse findById(int id);
     public EmpResponse createEmployee(Employee employee);
     public EmpResponse updateEmployee(Employee employee);
     public void deleteEmployee(int id);

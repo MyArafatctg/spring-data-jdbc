@@ -23,13 +23,14 @@ public class EmployeeServicesImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmpResponse> findById(int id) {
-        return List.of();
+    public EmpResponse findById(int id) {
+        return employeeMapper.toResponse(employeeRepository.findById(id));
     }
 
     @Override
     public EmpResponse createEmployee(Employee employee) {
-        return null;
+        var employe = employeeRepository.save(employee);
+        return employeeMapper.toResponse(employe);
     }
 
     @Override
