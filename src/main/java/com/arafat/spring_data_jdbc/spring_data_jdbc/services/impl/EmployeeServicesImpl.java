@@ -1,5 +1,6 @@
 package com.arafat.spring_data_jdbc.spring_data_jdbc.services.impl;
 
+import com.arafat.spring_data_jdbc.spring_data_jdbc.dtos.requestDto.EmpRequest;
 import com.arafat.spring_data_jdbc.spring_data_jdbc.dtos.responseDto.EmpResponse;
 import com.arafat.spring_data_jdbc.spring_data_jdbc.entities.Employee;
 import com.arafat.spring_data_jdbc.spring_data_jdbc.mappers.EmployeeMapper;
@@ -28,18 +29,18 @@ public class EmployeeServicesImpl implements EmployeeService {
     }
 
     @Override
-    public EmpResponse createEmployee(Employee employee) {
-        var employe = employeeRepository.save(employee);
-        return employeeMapper.toResponse(employe);
+    public EmpResponse createEmployee(EmpRequest request) {
+        var employee = employeeRepository.save(request);
+        return employeeMapper.toResponse(employee);
     }
 
     @Override
-    public EmpResponse updateEmployee(Employee employee) {
-        return null;
+    public EmpResponse updateEmployee(Employee employee, int id) {
+        return employeeMapper.toResponse(employeeRepository.update(employee, id));
     }
 
     @Override
-    public void deleteEmployee(int id) {
-
+    public String deleteEmployee(int id) {
+        return employeeRepository.deleteById(id);
     }
 }

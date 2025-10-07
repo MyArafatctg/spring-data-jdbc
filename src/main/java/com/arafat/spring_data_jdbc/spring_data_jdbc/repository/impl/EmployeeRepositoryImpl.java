@@ -1,5 +1,6 @@
 package com.arafat.spring_data_jdbc.spring_data_jdbc.repository.impl;
 
+import com.arafat.spring_data_jdbc.spring_data_jdbc.dtos.requestDto.EmpRequest;
 import com.arafat.spring_data_jdbc.spring_data_jdbc.entities.Employee;
 import com.arafat.spring_data_jdbc.spring_data_jdbc.mappers.EmployeeMapper;
 import com.arafat.spring_data_jdbc.spring_data_jdbc.repository.EmployeeRepository;
@@ -38,19 +39,34 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
-    public Employee save(Employee employee) {
+    public Employee save(EmpRequest employee) {
         String  sql = "insert into employee (name, designation, join_date) values (?, ?, ?)";
         int id = jdbcTemplate.update(sql, employee.getName(), employee.getDesignation(), employee.getJoinDate());
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     @Override
-    public void deleteById(int id) {
-
+    public String deleteById(int id) {
+        Employee employee = findById(id);
+        if (employee != null) {
+            String  sql = "delete from employee where id = ?";
+            jdbcTemplate.update(sql, id);
+            return "Employee " + employee.getId() + " has been deleted";
+        }
+        return "Employee with id " + id + " does not exist";
     }
 
     @Override
-    public Employee update(Employee employee) {
-        return null;
+    public Employee update(Employee employee, int id) {
+        Employee updatedEmp = findById(id);
+        if (updatedEmp == null) {
+            throw new RuntimeException("Employee with id " + id + " does not exist");
+        }
+        String sql = "update employee set name = ?, designation = ?, join_date = ?  where id = ?";
+        updatedEmp.setName(employee.getName());
+        updatedEmp.setDesignation(employee.getDesignation());
+        updatedEmp.setJoinDate(employee.getJoinDate());
+        jdbcTemplate.update(sql, employee.getName(), employee.getDesignation(), employee.getJoinDate(), id);
+        return updatedEmp;
     }
 }
